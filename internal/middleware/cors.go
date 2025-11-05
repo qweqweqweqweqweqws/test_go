@@ -9,17 +9,18 @@ func CORS() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
 
-		// Разрешаем все origins или конкретный origin из запроса
-		// Для production лучше использовать список разрешенных доменов
-		if origin != "" {
-			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
-		} else {
-			// Если Origin не указан, разрешаем все (для простоты)
-			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		}
+		// Разрешаем конкретный origin из запроса
+		// Если origin не указан (например, same-origin запрос), разрешаем все
+		// if origin != "" {
+		// 	c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+		// 	// Важно: если используем конкретный origin, можно использовать credentials
+		// 	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		// } else {
+		// Если Origin не указан, разрешаем все (для same-origin запросов)
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		// Нельзя использовать credentials с "*"
+		// }
 
-		// Важно: если используем credentials, нельзя использовать "*"
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")
 		c.Writer.Header().Set("Access-Control-Expose-Headers", "Set-Cookie")
